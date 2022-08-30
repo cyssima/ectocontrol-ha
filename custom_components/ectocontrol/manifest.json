@@ -1,0 +1,10 @@
+{
+  "domain": "ectocontrol",
+  "name": "EctoControl",
+  "documentation": "",
+  "dependencies": [],
+  "codeowners": [],
+  "requirements": [],
+  "iot_class": "cloud_polling",
+  "version": "0.1.0"
+}
