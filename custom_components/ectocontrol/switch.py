@@ -3,6 +3,7 @@ from __future__ import annotations
 import errno
 from multiprocessing.connection import Client
 from .api import Api
+from .const import DOMAIN
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -24,27 +25,25 @@ class EctoSwitch(SwitchEntity):
     _item = None
 
     def __init__(self, hass: HomeAssistant, api: Api, item):
-        self._is_on = True if item['state']['state']['val'] == 1 else False
         #self._attr_device_info = ...  # For automatic device registration
-        #self._attr_unique_id = ...
-
+        
         self._api = api
         self._item = item
 
         self._attr_name = item['config']['name']
+        self._attr_unique_id = self._item['id']
 
-    @property
-    def is_on(self):
-        """If the switch is currently on or off."""
-        self._is_on = True if self._api.getValue(self._item['id']) == 1 else False
-        return self._is_on
+        self._api.setDispatcher(self._item['id'], self.set_state)
+
+    def set_state(self, state):
+        self._attr_is_on = True if state == 1 else False
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
-        self._is_on = True
         self._api.setState(self._item['id'], "1")
+        self.set_state(1)
 
     def turn_off(self, **kwargs):
         """Turn the switch off."""
-        self._is_on = False
         self._api.setState(self._item['id'], "0")
+        self.set_state(0)

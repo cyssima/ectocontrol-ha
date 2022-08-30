@@ -12,6 +12,8 @@ class Api():
     _cacheTimestamp = datetime.datetime(datetime.MINYEAR, 1, 1)
     _cacheLifetime = datetime.timedelta(minutes=1)
 
+    _dispatchers = {}
+
     async def _doRequest(self, path, body):
         with MultipartWriter("form-data") as mp:
             part = mp.append(json.dumps(body))
@@ -30,6 +32,14 @@ class Api():
             responseJson = await self._doRequest('objects/list', body)
             self._cache = responseJson
             self._cacheTimestamp = datetime.datetime.now()
+
+            for item in responseJson['list']:
+                if item['id'] in self._dispatchers:
+                    if 'state' in item['state']:
+                        self._dispatchers[item['id']](item['state']['state']['val'])
+
+    def setDispatcher(self, id, dispatcher):
+        self._dispatchers[id] = dispatcher
 
     async def getValue(self, id):
         await self.refreshIfNeeded()
