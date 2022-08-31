@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.components.switch import (SwitchEntity)
-from homeassistant.helpers.entity import EntityCategory, ATTR_DEVICE_CLASSfrom 
+from homeassistant.helpers.entity import EntityCategory, ATTR_DEVICE_CLASS
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 import logging
 
