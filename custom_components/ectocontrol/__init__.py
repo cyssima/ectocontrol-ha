@@ -28,9 +28,12 @@ async def async_setup(
 
     config = hass_config[DOMAIN]
 
-    hass.data[DOMAIN] = config
+    username = config[CONF_USERNAME]
+    password = config.get(CONF_PASSWORD)
+
+    hass.data[DOMAIN] = Api(username, password)
 
     await discovery.async_load_platform(hass, "sensor", DOMAIN, "", config)
-    #await discovery.async_load_platform(hass, "switch", DOMAIN, "", config)
+    await discovery.async_load_platform(hass, "switch", DOMAIN, "", config)
 
     return True

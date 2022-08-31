@@ -6,7 +6,8 @@ def await_(coro):
     return asyncio.get_event_loop().run_until_complete(coro)
 
 def test_login():
-    sensor = Api('test', 'test', ClientSession())
+    sensor = Api('test', 'test')
+    sensor.setClientSession(ClientSession())
     value = await_(sensor.getValue(20605))
     items = await_(sensor.getItems())
     print(items)

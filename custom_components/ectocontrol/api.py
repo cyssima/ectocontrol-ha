@@ -70,7 +70,12 @@ class Api():
 
         return list(self._cache['list'])
 
-    def __init__(self, username: str, password: str, session: ClientSession):
+    def setClientSession(self, session: ClientSession):
+        if self._session:
+            return False
+        self._session = session
+        return True
+
+    def __init__(self, username: str, password: str):
         self._login = username
         self._pass = password
-        self._session = session

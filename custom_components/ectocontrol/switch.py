@@ -16,12 +16,34 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.components.switch import (SwitchEntity)
-from homeassistant.helpers.entity import EntityCategory, ATTR_DEVICE_CLASS
+from homeassistant.helpers.entity import EntityCategory, ATTR_DEVICE_CLASSfrom 
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
 
 mdis = {
     21948:{1:"mdi:water-pump",0:"mdi:water-pump-off"},
     0:{1:"mdi:toggle-switch",0:"mdi:toggle-switch-off"}
 }
+
+async def async_setup_platform(hass, hass_config, async_add_entities, discovery_info=None):
+    api = hass.data[DOMAIN]
+    api.setClientSession(async_get_clientsession(hass))
+    token = await api.getToken()
+
+    if not token:
+        _LOGGER.error("Could not connect to EctoControl")
+        return
+
+    items = await api.getItems()
+    entities = []
+    for item in items:
+        if item['info']['type']['type'] == 6946:
+            entities.extend([EctoSwitch(hass, api, item)])
+
+    async_add_entities(entities)
 
 class EctoSwitch(SwitchEntity):
     _attr_has_entity_name = True

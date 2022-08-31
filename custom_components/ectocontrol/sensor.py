@@ -4,7 +4,6 @@ import errno
 from multiprocessing.connection import Client
 from .const import DOMAIN
 from .api import Api
-from .switch import EctoSwitch
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -23,11 +22,8 @@ import logging
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_platform(hass, hass_config, async_add_entities, discovery_info=None):
-    config = hass.data[DOMAIN]
-    username = config[CONF_USERNAME]
-    password = config.get(CONF_PASSWORD)
-
-    api = Api(username, password, async_get_clientsession(hass))
+    api = hass.data[DOMAIN]
+    api.setClientSession(async_get_clientsession(hass))
     token = await api.getToken()
 
     if not token:
@@ -37,9 +33,7 @@ async def async_setup_platform(hass, hass_config, async_add_entities, discovery_
     items = await api.getItems()
     entities = []
     for item in items:
-        if item['info']['type']['type'] == 6946:
-            entities.extend([EctoSwitch(hass, api, item)])
-        else:
+        if item['info']['type']['type'] != 6946:
             entities.extend([EctoSensor(hass, api, item)])
 
     async_add_entities(entities)
